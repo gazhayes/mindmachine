@@ -22,6 +22,7 @@ import (
 	"mindmachine/messaging/blocks"
 	"mindmachine/messaging/nostrelay"
 	"mindmachine/mindmachine"
+	"mindmachine/scumclass/eventbucket"
 )
 
 func Start(terminate chan struct{}, wg *sync.WaitGroup) {
@@ -40,6 +41,7 @@ func Start(terminate chan struct{}, wg *sync.WaitGroup) {
 	if !samizdatStarted {
 		subscribeToSamizdat()
 	}
+	go SubscribeToAllEvents(terminate)
 	fetchEventPackLooper()
 	if blocksBehind() > 1 {
 		if shares.VotePowerForAccount(mindmachine.MyWallet().Account) > 0 && mindmachine.MakeOrGetConfig().GetBool("forceBlocks") {
@@ -354,6 +356,61 @@ func subscribeToSamizdat() {
 			}
 		}()
 	}
+}
+
+func SubscribeToAllEvents(terminate chan struct{}) {
+	pool := nostr.NewRelayPool()
+	mindmachine.LogCLI("Subscribing to Kind 1 Events", 3)
+	for _, s := range mindmachine.MakeOrGetConfig().GetStringSlice("relays") {
+		errchan := pool.Add(s, nostr.SimplePolicy{Read: true, Write: true})
+		rewriteConfigMutex := &deadlock.Mutex{}
+		go func(s string) {
+			for err := range errchan {
+				if strings.Contains(err.Error(), "failed") {
+					fmt.Println(370)
+					rewriteConfigMutex.Lock()
+					relays := mindmachine.MakeOrGetConfig().GetStringSlice("relays")
+					fmt.Printf("\nlength of relays: %d\n", len(relays))
+					newRelays := []string{}
+					for _, relay := range relays {
+						if relay != s {
+							newRelays = append(newRelays, relay)
+						}
+					}
+					if len(relays) == len(newRelays) {
+						fmt.Println(380)
+					}
+					mindmachine.MakeOrGetConfig().SetDefault("relays", newRelays)
+					mindmachine.MakeOrGetConfig().Set("relays", newRelays)
+					//mindmachine.MakeOrGetConfig().WriteConfigAs("newconfig.yaml")
+					if err := mindmachine.MakeOrGetConfig().WriteConfig(); err != nil {
+						mindmachine.LogCLI(err.Error(), 2)
+					}
+					rewriteConfigMutex.Unlock()
+				}
+				mindmachine.LogCLI(fmt.Sprintf("%s %s", err.Error(), s), 2)
+			}
+		}(s)
+	}
+
+	filters := nostr.Filters{}
+	filters = append(filters, nostr.Filter{
+		//Kinds: []int{640001},
+	})
+	_, evnts, unsub := pool.Sub(filters)
+	defer unsub()
+	go func() {
+		for {
+			select {
+			case e := <-nostr.Unique(evnts):
+				if ok, _ := e.CheckSignature(); ok {
+					eventbucket.HandleEvent(mindmachine.ConvertToInternalEvent(&e))
+				}
+			case <-terminate:
+				return
+			}
+		}
+	}()
 }
 
 func startEventSubscription() {

@@ -48,7 +48,7 @@ func main() {
 	conf := viper.New()
 
 	// Now we initialise this configuration with basic settings that are required on startup.
-	initConfig(conf)
+	mindmachine.InitConfig(conf)
 
 	// make the config accessible globally
 	mindmachine.SetConfig(conf)

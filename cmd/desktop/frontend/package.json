@@ -1,0 +1,22 @@
+{
+  "name": "my-solid-app",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.9.4",
+    "vite": "^2.9.15",
+    "vite-plugin-solid": "^2.5.0"
+  },
+  "dependencies": {
+    "@picocss/pico": "^1.5.6",
+    "solid-js": "^1.6.6"
+  },
+  "author": "gazhayes"
+}
