@@ -3,6 +3,7 @@ module mindmachine
 go 1.18
 
 require (
+	github.com/afjoseph/RAKE.Go v0.0.0-20191109090147-068a9e43b194
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/davecgh/go-spew v1.1.1
 	github.com/eiannone/keyboard v0.0.0-20200508000154-caf4b762e807
@@ -10,6 +11,7 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/json-iterator/go v1.1.12
 	github.com/mborders/logmatic v0.4.0
+	github.com/montanaflynn/stats v0.6.6
 	github.com/nbd-wtf/go-nostr v0.9.1-0.20221223143524-3f2c3f1bd89b
 	github.com/otiai10/copy v1.6.0
 	github.com/rs/cors v1.8.2

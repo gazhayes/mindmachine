@@ -9,3 +9,11 @@ export function CalculateMentions() {
 export function CurrentOrder() {
   return window['go']['eventbucket']['EventBucket']['CurrentOrder']();
 }
+
+export function EventList() {
+  return window['go']['eventbucket']['EventBucket']['EventList']();
+}
+
+export function SingleEvent() {
+  return window['go']['eventbucket']['EventBucket']['SingleEvent']();
+}

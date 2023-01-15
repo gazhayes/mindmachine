@@ -1,11 +1,11 @@
-import type { Component } from 'solid-js';
-import { createSignal, onCleanup } from "solid-js";
+import type { Component, onMount } from 'solid-js';
+import {createSignal, For, onCleanup} from "solid-js";
 import { render } from "solid-js/web";
 
 import logo from './logo.svg';
 import styles from './App.module.css';
 import {Greet} from "../wailsjs/go/main/App";
-import {CalculateMentions} from "../wailsjs/go/eventbucket/EventBucket";
+import {CalculateMentions, CurrentOrder, SingleEvent, EventList} from "../wailsjs/go/eventbucket/EventBucket";
 
 const App: Component = () => {
   return (
@@ -14,16 +14,10 @@ const App: Component = () => {
         <img src={logo} class={styles.logo} alt="logo" />
         <p>
           <EventCounterComponent />
-          <CalcMentions />
+            <EventCounterComponent2 />
+            <CalcMentions />
+            <OneEvent />
         </p>
-        <a
-          class={styles.link}
-          href="https://github.com/solidjs/solid"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Solid
-        </a>
       </header>
     </div>
   );
@@ -55,6 +49,14 @@ const EventCounterComponent = () => {
   return <div>Number of events that have been indexed: {g()}</div>;
 };
 
+const EventCounterComponent2 = () => {
+    const [g, setString] = createSignal("x");
+    Greet("sadfsda").then(function (e) {
+        setString(e)
+    })
+    return <div>Number of events that have been indexed: {g()}</div>;
+};
+
 const CalcMentions = () => {
   return (
       <>
@@ -63,9 +65,35 @@ const CalcMentions = () => {
   );
 };
 
+const OneEvent = () => {
+    const [ev, setev] = createSignal("");
+    SingleEvent().then(function (e){
+        setev(e.Event.content)
+        console.log(e.Event.content)
+    })
+    return (
+        <>
+            <p>
+                {ev()}
+            </p>
+        </>
+    )
+}
+
+
+
 function calculate() {
-    console.log()
+    console.log(59)
     CalculateMentions().then(function (result) {
         console.log(result)
+        EventList().then(function (e) {
+            const [elist, seteList] = createSignal(e);
+
+            e.forEach(function (e2){
+                console.log(e2)
+            })
+        })
+        //currentOrder()
     })
 }
+

@@ -5,3 +5,7 @@ import {eventbucket} from '../models';
 export function CalculateMentions():Promise<boolean>;
 
 export function CurrentOrder():Promise<Array<eventbucket.Event>>;
+
+export function EventList():Promise<Array<eventbucket.Event>>;
+
+export function SingleEvent():Promise<eventbucket.Event>;

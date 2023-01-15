@@ -110,14 +110,19 @@ func GetNumberOfKinds() map[int]int64 {
 
 var currentOrder []Event
 var currentOrderMutex = &deadlock.Mutex{}
+var lastCalculated time.Time
 
-func getCurrentOrder() []Event {
+func CurrentOrder() []Event {
+	if time.Since(lastCalculated) > (time.Minute*2) || len(currentOrder) < 20 {
+		calculateMentions()
+	}
 	currentOrderMutex.Lock()
 	defer currentOrderMutex.Unlock()
 	return currentOrder
 }
 
-func CalculateMentions() {
+func calculateMentions() {
+	defer timeTrack(time.Now(), "calculateMentions")
 	currentState.mutex.Lock()
 	defer currentState.mutex.Unlock()
 	currentState.data = resetMentions(currentState.data)
@@ -147,12 +152,13 @@ func CalculateMentions() {
 		currentOrder = append(currentOrder, target)
 	}
 	currentOrder = orderByRankings(orderByMentions(currentOrder))
-
+	lastCalculated = time.Now()
 }
 
 const kvalue int64 = 400
 
 func resetMentions(in map[mindmachine.S256Hash]Event) (out map[mindmachine.S256Hash]Event) {
+	defer timeTrack(time.Now(), "resetMentions")
 	out = make(map[mindmachine.S256Hash]Event)
 	for hash, target := range in {
 		target.Mentions = 0
@@ -163,6 +169,7 @@ func resetMentions(in map[mindmachine.S256Hash]Event) (out map[mindmachine.S256H
 }
 
 func orderByRankings(in []Event) []Event {
+	defer timeTrack(time.Now(), "orderByRankings")
 	sort.SliceStable(in, func(i, j int) bool {
 		return in[i].Score > in[j].Score
 	})
@@ -170,6 +177,7 @@ func orderByRankings(in []Event) []Event {
 }
 
 func orderByMentions(in []Event) []Event {
+	defer timeTrack(time.Now(), "orderByMentions")
 	sort.Slice(in, func(i, j int) bool {
 		return in[i].Mentions > in[j].Mentions
 	})
@@ -177,6 +185,7 @@ func orderByMentions(in []Event) []Event {
 }
 
 func writeDb() {
+	defer timeTrack(time.Now(), "writeDb")
 	currentState.mutex.Lock()
 	defer currentState.mutex.Unlock()
 	b, err := json.MarshalIndent(currentState.data, "", " ")

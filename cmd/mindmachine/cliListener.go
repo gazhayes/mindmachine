@@ -292,8 +292,67 @@ func cliListener(interrupt chan struct{}) {
 			//	}
 			//}()
 		case "R":
-			go func() { nostrelay.RepublishEverything() }()
+			//go func() { nostrelay.RepublishEverything() }()
+			//fmt.Println(gnostr.Count())
+			//fmt.Printf("\n%#v\n", gnostr.GetNumberOfKinds())
+			//fmt.Println()
+			//
+			//gnostr.CalculateMentions()
+			//c := gnostr.CurrentOrder()
+			//
+			//for i, target := range c {
+			//	if i < 50 {
+			//		if !IsJSON(target.Event.Content) && len(target.Event.Content) > 0 {
+			//			fmt.Printf("\n\n%d\n%s\n%d\n", i, target.Event.Content, target.Mentions)
+			//		}
+			//	}
+			//}
 
+			//var largest int64
+			//p := gnostr.GetNumberOfPTags()
+			//var ints []int
+			//for i, _ := range p {
+			//	ints = append(ints, int(i))
+			//}
+			//sort.Ints(ints)
+			//best := make(map[string]string)
+			//for i := 0; i < 10000; i   {
+			//	if len(best) < 30 {
+			//		best[p[int64(len(p)-i)]] = ""
+			//	}
+			//}
+
+			//var largestpubkey string
+			//for _, i := range gnostr.GetNumberOfPTags() {
+			//	if i > largest {
+			//		largest = i
+			//		//largestpubkey = s
+			//	}
+			//}
+			//best := make(map[string]string)
+			//for s, i := range gnostr.GetNumberOfPTags() {
+			//	if i > largest-20 {
+			//		best[s] = ""
+			//	}
+			//}
+
+			//list := []string{}
+			//for s, _ := range best {
+			//	list = append(list, s)
+			//}
+			//evts, ok := nostrelay.FetchEventPack(list)
+			//if ok {
+			//	for _, evt := range evts {
+			//		if !IsJSON(evt.Content) && evt.Kind == 1 {
+			//			best[evt.ID] = evt.Content
+			//		}
+			//	}
+			//}
+			//for s, s2 := range best {
+			//	if len(s2) > 0 {
+			//		fmt.Printf("\n%s\n%s\n", s, s2)
+			//	}
+			//}
 		case "E":
 			event, ok := nostrelay.FetchLocalCachedEvent("9e333343184fe3e98b028782f7098cf596f1f46adf546541e7317d9a5f1d5d57")
 			if ok {
